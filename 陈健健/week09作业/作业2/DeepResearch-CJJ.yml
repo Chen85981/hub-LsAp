@@ -117,19 +117,6 @@ workflow:
       type: custom
       zIndex: 1002
     - data:
-        isInIteration: true
-        isInLoop: false
-        iteration_id: '1789640667048'
-        sourceType: code
-        targetType: llm
-      id: 1789640889217--1789640939946-target
-      source: '1789640889217'
-      sourceHandle: source
-      target: '1789640939946'
-      targetHandle: target
-      type: custom
-      zIndex: 1002
-    - data:
         isInIteration: false
         isInLoop: false
         sourceType: llm
@@ -164,6 +151,32 @@ workflow:
       targetHandle: target
       type: custom
       zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1789640667048'
+        sourceType: code
+        targetType: code
+      id: 1789640889217--1789649524427-target
+      source: '1789640889217'
+      sourceHandle: source
+      target: '1789649524427'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1789640667048'
+        sourceType: code
+        targetType: llm
+      id: 1789649524427-source-1789640939946-target
+      source: '1789649524427'
+      sourceHandle: source
+      target: '1789640939946'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
     nodes:
     - data:
         selected: false
@@ -197,11 +210,11 @@ workflow:
       height: 161
       id: '1789640471411'
       position:
-        x: 80
-        y: 282
+        x: 6.216507775033733
+        y: 246.58392373201622
       positionAbsolute:
-        x: 80
-        y: 282
+        x: 6.216507775033733
+        y: 246.58392373201622
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -232,7 +245,7 @@ workflow:
             只输出JSON，不要任何解释。
 
             '
-        selected: true
+        selected: false
         structured_output:
           schema:
             additionalProperties: false
@@ -257,11 +270,11 @@ workflow:
       height: 88
       id: '1789640593531'
       position:
-        x: 382
-        y: 282
+        x: 155.70429432617175
+        y: 134.72640027435506
       positionAbsolute:
-        x: 382
-        y: 282
+        x: 155.70429432617175
+        y: 134.72640027435506
       selected: true
       sourcePosition: right
       targetPosition: left
@@ -270,7 +283,7 @@ workflow:
     - data:
         error_handle_mode: terminated
         flatten_output: false
-        height: 225
+        height: 263
         is_parallel: false
         iterator_input_type: object
         iterator_selector:
@@ -287,14 +300,14 @@ workflow:
         title: 迭代
         type: iteration
         width: 990
-      height: 225
+      height: 263
       id: '1789640667048'
       position:
-        x: 810.230493091494
-        y: 602.267736829205
+        x: 336.06870734442805
+        y: 249.40189952103668
       positionAbsolute:
-        x: 810.230493091494
-        y: 602.267736829205
+        x: 336.06870734442805
+        y: 249.40189952103668
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -315,8 +328,8 @@ workflow:
         x: 24
         y: 68
       positionAbsolute:
-        x: 834.230493091494
-        y: 670.267736829205
+        x: 360.06870734442805
+        y: 317.4018995210367
       selectable: false
       selected: false
       sourcePosition: right
@@ -366,10 +379,10 @@ workflow:
       parentId: '1789640667048'
       position:
         x: 129.89756471841815
-        y: 66.10243528158162
+        y: 65
       positionAbsolute:
-        x: 940.1280578099122
-        y: 668.3701721107866
+        x: 465.9662720628462
+        y: 314.4018995210367
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -378,25 +391,32 @@ workflow:
       zIndex: 1002
     - data:
         code: "import json\n\ndef main(search_response: str):\n    try:\n        #\
-          \ 解析JSON\n        if isinstance(search_response, str):\n            data\
-          \ = json.loads(search_response)\n        elif isinstance(search_response,\
+          \ 1. 解析JSON字符串\n        if isinstance(search_response, str):\n         \
+          \   data = json.loads(search_response)\n        elif isinstance(search_response,\
           \ dict):\n            data = search_response\n        else:\n          \
           \  return {\n                \"search_results\": [],\n                \"\
           urls\": [],\n                \"total\": 0,\n                \"error\": \"\
-          输入类型错误\"\n            }\n        \n        # 提取博查API的网页列表\n        web_pages\
-          \ = data.get(\"data\", {}).get(\"webPages\", [])\n        formatted = []\n\
-          \        urls = []\n        \n        for idx, page in enumerate(web_pages):\n\
-          \            url = page.get(\"url\", \"\")\n            formatted.append({\n\
-          \                \"index\": idx + 1,\n                \"title\": page.get(\"\
-          name\", \"\"),\n                \"url\": url,\n                \"snippet\"\
-          : page.get(\"snippet\", \"\"),\n                \"summary\": page.get(\"\
-          summary\", \"\")\n            })\n            if url:\n                urls.append(url)\n\
-          \        \n        return {\n            \"search_results\": formatted,\n\
-          \            \"urls\": urls,\n            \"total\": len(formatted),\n \
-          \           \"error\": \"\"\n        }\n    \n    except Exception as e:\n\
-          \        return {\n            \"search_results\": [],\n            \"urls\"\
-          : [],\n            \"total\": 0,\n            \"error\": str(e)\n      \
-          \  }\n"
+          输入类型错误\"\n            }\n\n        # 2. 兼容两种返回结构：直接返回数据 / 外层包裹code+data\n\
+          \        if \"data\" in data and isinstance(data[\"data\"], dict):\n   \
+          \         response_data = data[\"data\"]\n        else:\n            response_data\
+          \ = data\n\n        # 3. 正确提取网页数组：webPages.value 才是真实的网页列表\n        web_pages_obj\
+          \ = response_data.get(\"webPages\", {})\n        web_pages = web_pages_obj.get(\"\
+          value\", [])\n        \n        # 兜底：确保是数组\n        if not isinstance(web_pages,\
+          \ list):\n            web_pages = []\n\n        formatted = []\n       \
+          \ urls = []\n\n        for idx, page in enumerate(web_pages):\n        \
+          \    # 确保每个元素都是字典\n            if not isinstance(page, dict):\n        \
+          \        continue\n            \n            url = page.get(\"url\", \"\"\
+          )\n            formatted.append({\n                \"index\": idx + 1,\n\
+          \                \"title\": page.get(\"name\", \"\"),\n                \"\
+          url\": url,\n                \"snippet\": page.get(\"snippet\", \"\"),\n\
+          \                \"summary\": page.get(\"summary\", \"\"),\n           \
+          \     \"site\": page.get(\"siteName\", \"\")\n            })\n         \
+          \   if url:\n                urls.append(url)\n\n        return {\n    \
+          \        \"search_results\": formatted,\n            \"urls\": urls,\n \
+          \           \"total\": len(formatted),\n            \"error\": \"\"\n  \
+          \      }\n\n    except Exception as e:\n        return {\n            \"\
+          search_results\": [],\n            \"urls\": [],\n            \"total\"\
+          : 0,\n            \"error\": str(e)\n        }\n"
         code_language: python3
         isInIteration: true
         isInLoop: false
@@ -428,10 +448,10 @@ workflow:
       parentId: '1789640667048'
       position:
         x: 430
-        y: 66.29335935753556
+        y: 65
       positionAbsolute:
-        x: 1240.230493091494
-        y: 668.5610961867405
+        x: 766.068707344428
+        y: 314.4018995210367
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -447,10 +467,20 @@ workflow:
         iteration_id: '1789640667048'
         model:
           completion_params:
-            temperature: 0.7
+            temperature: 0.3
           mode: chat
           name: deepseek-v4.1-flash
           provider: langgenius/tongyi/tongyi
+        prompt_config:
+          jinja2_variables:
+          - value_selector:
+            - '1789640889217'
+            - search_results
+            variable: search_results
+          - value_selector:
+            - '1789649524427'
+            - formatted_text
+            variable: formatted_text
         prompt_template:
         - id: f7b17760-7d2a-4333-8d03-a18c9a25e929
           role: system
@@ -464,16 +494,19 @@ workflow:
 
             3. 输出结构化要点，不超过500字
 
-            4. 若搜索结果无关，明确标注"信息不足"
-
             '
-        - id: 46cfc167-567b-489a-b314-705600d49cb0
+        - edition_type: jinja2
+          id: 46cfc167-567b-489a-b314-705600d49cb0
+          jinja2_text: "当前子问题：{{item}}\r\n\r\n搜索结果：\r\n{{ formatted_text }}\r\n\r\n\
+            请基于以上搜索结果，提炼核心结论、关键数据和核心观点，严格输出纯JSON，不要任何解释、思考、Markdown代码块。\r\n输出格式：\r\
+            \n{\r\n  \"summary\": \"200字以内的结构化总结，包含核心数据和结论\",\r\n  \"urls\": [\"本次搜索的所有网页链接，按顺序排列\"\
+            ]\r\n}\r\n"
           role: user
-          text: '当前子问题：{{iteration.item}}
+          text: '当前子问题：{{#1789640667048.item#}}
 
             搜索结果：
 
-            {% for item in search_results %}
+            {% for item in 搜索结果格式化.search_results %}
 
             [{{item.index}}] {{item.title}}（{{item.site}}）
 
@@ -483,7 +516,8 @@ workflow:
 
             {% endfor %}
 
-            请严格按照指定的 JSON 格式输出，summary 为总结内容，urls 为本次搜索结果的所有网页链接数组。
+            请基于以上搜索结果，提炼核心结论、关键数据和核心观点，严格输出纯JSON，不要任何解释、思考、Markdown代码块。 输出格式： { "summary":
+            "200字以内的结构化总结，包含核心数据和结论", "urls": ["本次搜索的所有网页链接，按顺序排列"] }
 
             '
         selected: false
@@ -512,10 +546,10 @@ workflow:
       parentId: '1789640667048'
       position:
         x: 732
-        y: 67.24214171674481
+        y: 65
       positionAbsolute:
-        x: 1542.230493091494
-        y: 669.5098785459497
+        x: 1068.068707344428
+        y: 314.4018995210367
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -588,11 +622,11 @@ workflow:
       height: 88
       id: '1789641009714'
       position:
-        x: 1527.1046886713307
-        y: 282
+        x: 1368.6836851544022
+        y: 343.37834922249664
       positionAbsolute:
-        x: 1527.1046886713307
-        y: 282
+        x: 1368.6836851544022
+        y: 343.37834922249664
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -621,11 +655,11 @@ workflow:
       height: 140
       id: '1789641033097'
       position:
-        x: 1829.1046886713307
-        y: 282
+        x: 1664.1593549989016
+        y: 306.95133968899864
       positionAbsolute:
-        x: 1829.1046886713307
-        y: 282
+        x: 1664.1593549989016
+        y: 306.95133968899864
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -673,18 +707,63 @@ workflow:
       height: 52
       id: '1789641695614'
       position:
-        x: 1248.68851949825
-        y: 388.01117268266904
+        x: 1270.9208877877425
+        y: 146.2932800507878
       positionAbsolute:
-        x: 1248.68851949825
-        y: 388.01117268266904
+        x: 1270.9208877877425
+        y: 146.2932800507878
       selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 242
+    - data:
+        code: "def main(search_results: list) -> dict:\n    lines = []\n    urls =\
+          \ []\n    for item in search_results:\n        if not isinstance(item, dict):\n\
+          \            continue\n        idx = item.get(\"index\", \"\")\n       \
+          \ title = item.get(\"title\", \"\")\n        site = item.get(\"site\", \"\
+          \")\n        summary = item.get(\"summary\") or item.get(\"snippet\", \"\
+          \")\n        url = item.get(\"url\", \"\")\n        lines.append(f\"[{idx}]\
+          \ {title}（来源：{site}）\\n摘要：{summary}\\n链接：{url}\")\n        if url:\n   \
+          \         urls.append(url)\n    return {\n        \"formatted_text\": \"\
+          \\n\\n\".join(lines),\n        \"urls\": urls\n    }\n"
+        code_language: python3
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1789640667048'
+        outputs:
+          formatted_text:
+            children: null
+            type: string
+          urls:
+            children: null
+            type: array[string]
+        selected: false
+        title: 搜索结果拼接
+        type: code
+        variables:
+        - value_selector:
+          - '1789640889217'
+          - search_results
+          value_type: array[object]
+          variable: search_results
+      height: 51
+      id: '1789649524427'
+      parentId: '1789640667048'
+      position:
+        x: 434.2109199138681
+        y: 162.69005117262475
+      positionAbsolute:
+        x: 770.2796272582962
+        y: 412.09195069366143
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
     viewport:
-      x: -21.61616894499548
-      y: 212.01707092480694
-      zoom: 0.5899358630530869
+      x: 44.055844462682444
+      y: 254.66746224233543
+      zoom: 0.757858283255199
   rag_pipeline_variables: []
